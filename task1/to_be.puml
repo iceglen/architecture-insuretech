@@ -1,0 +1,36 @@
+@startuml
+
+actor user as "user"
+agent web_browser as "Web Browser"
+
+cloud gateway_cloud as "Gateway Cloud" {
+    component cdn as "CDN"
+    component glb as "Global Load Balancer"
+}
+
+cloud zone1 as "Zone 1" {
+    component k8s_cluster_1 as "K8S cluster (zone 1)" {
+        card app1 as "InsureTech application (zone 1)"
+    }
+    component redis1 as "Redis cluster (zone 1)"
+    database pg_ha_1 as "PostgreSQL HA cluster (zone 1)"
+}
+
+cloud zone2 as "Zone 2 (standby)" {
+    component k8s_cluster_2 as "K8S cluster (zone 2)" {
+        card app2 as "InsureTech application (zone 2)"
+    }
+    component redis2 as "Redis cluster (zone 2)"
+    database pg_2 as "PostgreSQL (zone 2)"
+}
+
+user --> web_browser
+web_browser --> gateway_cloud
+
+gateway_cloud --> cdn
+cdn --> glb
+
+glb -left-> zone1
+glb -down-> zone2
+
+@enduml
